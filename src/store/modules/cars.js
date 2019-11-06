@@ -10,10 +10,7 @@ const getters = {
 
 const actions ={
     async fetchCars({commit}) {
-        console.log("before fetching..");
         const response = await axios.get("http://localhost:8000/cars");
-        console.log("after fetching..");
-        console.log(response.data);
         commit('setCars', response.data);
     },
     addCar : ({commit}, newCar) =>{
