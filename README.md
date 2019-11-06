@@ -1,24 +1,14 @@
-# car_inventory
+# car_inventory (SPA with AJAX)
 
-## Project setup
-```
-npm install
-```
+###Front End
+    Front end Framework: VueJS
+    UI Framework: Vuetify
+    State Management Library: Vuex
+    Router Library: Vue-router
+    
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+###Back End
+    Language: Go
+    Router Library: Golilla mux
+    Restful API Implemented
+ 
