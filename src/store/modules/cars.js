@@ -1,55 +1,6 @@
-
+import axios from 'axios';
 const state = {
-    cars : [
-        {
-            No:1,
-            vinNumber: 'MEKCMKS28CSSNUDS',
-            model: '320i',
-            make:'BMW',
-            year:2013,
-            MSRP:147000,
-            Status:'Ordered',
-            Booked:'y',
-            Listed:'n',
-
-        },
-        {
-            No:2,
-            vinNumber: 'SSNJ3JN1KNKWCNSK',
-            model: 'Camry',
-            make:'Toyota',
-            year:2014,
-            MSRP:120000,
-            Status:'in stock',
-            Booked:'y',
-            Listed:'n',
-
-        },
-        {
-            No:3,
-            vinNumber: 'CMKASLFM4KMSFKSK',
-            model: 'Focus',
-            make:'Ford',
-            year:2016,
-            MSRP:130000,
-            Status:'Ordered',
-            Booked:'n',
-            Listed:'y',
-
-        },
-        {
-            No:4,
-            vinNumber: 'SDFMK4MKVCSAMKKSS',
-            model: 'Civic',
-            make:'Honda',
-            year:2016,
-            MSRP:140000,
-            Status:'sold',
-            Booked:'n',
-            Listed:'n',
-
-        }
-    ]
+    cars : []
 };
 
 const getters = {
@@ -58,6 +9,13 @@ const getters = {
 };
 
 const actions ={
+    async fetchCars({commit}) {
+        console.log("before fetching..");
+        const response = await axios.get("http://localhost:8000/cars");
+        console.log("after fetching..");
+        console.log(response.data);
+        commit('setCars', response.data);
+    },
     addCar : ({commit}, newCar) =>{
         commit('newCar', newCar);
     },
@@ -70,6 +28,9 @@ const actions ={
 };
 
 const mutations = {
+    setCars : (state, cars) => {
+        Object.assign(state.cars, cars);
+    },
     newCar : (state, newCar) => {
         state.cars.unshift(newCar);
     },

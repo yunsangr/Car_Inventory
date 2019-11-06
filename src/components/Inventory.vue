@@ -152,13 +152,13 @@
             },
         },
 
-        created () {
+        async created() {
+            const p = await this.fetchCars();
             this.initialize()
         },
 
         methods: {
-            ...mapActions(['addCar', 'editCar','deleteCar']),
-
+            ...mapActions(['addCar', 'editCar','deleteCar', 'fetchCars']),
             initialize () {
                 this.cars = this.allCars
             },
