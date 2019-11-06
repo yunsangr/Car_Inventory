@@ -6,14 +6,13 @@
                     show-select
                     :single-select="singleSelect"
                     :headers="headers"
-                    :items="desserts"
-                    item-key="name"
-                    sort-by="calories"
+                    :items="cars"
+                    sort-by="No"
                     class="elevation-1"
             >
                 <template v-slot:top>
                     <v-toolbar flat color="white">
-                        <v-toolbar-title>My CRUD</v-toolbar-title>
+                        <v-toolbar-title>Inventory</v-toolbar-title>
                         <v-divider
                                 class="mx-4"
                                 inset
@@ -33,25 +32,30 @@
                                 <v-card-text>
                                     <v-container>
                                         <v-row>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field>
+                                            <v-col cols="24" sm="12" md="8">
+                                                <v-text-field v-model="editedItem.vinNumber" label="VIN#:"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.calories" label="Calories"></v-text-field>
+                                                <v-text-field v-model="editedItem.model" label="Model:"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.fat" label="Fat (g)"></v-text-field>
+                                                <v-text-field v-model="editedItem.make" label="Make:"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.carbs" label="Carbs (g)"></v-text-field>
+                                                <v-text-field v-model="editedItem.year" label="Year:"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.protein" label="Protein (g)"></v-text-field>
+                                                <v-text-field v-model="editedItem.MSRP" label="MSRP:"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.Booked" label="Booked:"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.Listed" label="Listed:"></v-text-field>
                                             </v-col>
                                         </v-row>
                                     </v-container>
                                 </v-card-text>
-
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
                                     <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
@@ -76,15 +80,14 @@
                         delete
                     </v-icon>
                 </template>
-                <template v-slot:no-data>
-                    <v-btn color="primary" @click="initialize">Reset</v-btn>
-                </template>
             </v-data-table>
         </v-container>
     </v-app>
 </template>
 
 <script>
+    import {mapGetters, mapActions} from 'vuex';
+    const d = new Date();
     export default {
         data: () => ({
             singleSelect: false,
@@ -92,39 +95,55 @@
             dialog: false,
             headers: [
                 {
-                    text: 'Dessert (100g serving)',
+                    text: 'No',
                     align: 'left',
-                    sortable: false,
-                    value: 'name',
+                    sortable: true,
+                    value: 'No',
                 },
-                { text: 'Calories', value: 'calories' },
-                { text: 'Fat (g)', value: 'fat' },
-                { text: 'Carbs (g)', value: 'carbs' },
-                { text: 'Protein (g)', value: 'protein' },
+                { text: 'Vin#', value: 'vinNumber' },
+                { text: 'Model', value: 'model' },
+                { text: 'Make', value: 'make' },
+                { text: 'Year', value: 'year' },
+                { text: 'MSRP', value: 'MSRP' },
+                { text: 'Status', value: 'Status' },
+                { text: 'Booked', value: 'Booked' },
+                { text: 'Listed', value: 'Listed' },
                 { text: 'Actions', value: 'action', sortable: false },
             ],
-            desserts: [],
+            cars: [],
             editedIndex: -1,
             editedItem: {
-                name: '',
-                calories: 0,
-                fat: 0,
-                carbs: 0,
-                protein: 0,
+                No:0,
+                vinNumber: '',
+                model: '',
+                make:'',
+                year:0,
+                MSRP:0,
+                Status:'',
+                Booked:'',
+                Listed:'',
             },
             defaultItem: {
-                name: '',
-                calories: 0,
-                fat: 0,
-                carbs: 0,
-                protein: 0,
+                vinNumber: '',
+                model: '',
+                make:'',
+                year:d.getFullYear(),
+                MSRP:0,
+                Status:'',
+                Booked:'',
+                Listed:'',
             },
         }),
 
         computed: {
-            formTitle () {
-                return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+            ...mapGetters([
+                'allCars'
+            ]),
+            formTitle: function () {
+                return this.editedIndex === -1 ? 'New Car' : 'Edit Item'
             },
+
+
         },
 
         watch: {
@@ -138,105 +157,42 @@
         },
 
         methods: {
+            ...mapActions(['addCar', 'editCar','deleteCar']),
+
             initialize () {
-                this.desserts = [
-                    {
-                        name: 'Frozen Yogurt',
-                        calories: 159,
-                        fat: 6.0,
-                        carbs: 24,
-                        protein: 4.0,
-                    },
-                    {
-                        name: 'Ice cream sandwich',
-                        calories: 237,
-                        fat: 9.0,
-                        carbs: 37,
-                        protein: 4.3,
-                    },
-                    {
-                        name: 'Eclair',
-                        calories: 262,
-                        fat: 16.0,
-                        carbs: 23,
-                        protein: 6.0,
-                    },
-                    {
-                        name: 'Cupcake',
-                        calories: 305,
-                        fat: 3.7,
-                        carbs: 67,
-                        protein: 4.3,
-                    },
-                    {
-                        name: 'Gingerbread',
-                        calories: 356,
-                        fat: 16.0,
-                        carbs: 49,
-                        protein: 3.9,
-                    },
-                    {
-                        name: 'Jelly bean',
-                        calories: 375,
-                        fat: 0.0,
-                        carbs: 94,
-                        protein: 0.0,
-                    },
-                    {
-                        name: 'Lollipop',
-                        calories: 392,
-                        fat: 0.2,
-                        carbs: 98,
-                        protein: 0,
-                    },
-                    {
-                        name: 'Honeycomb',
-                        calories: 408,
-                        fat: 3.2,
-                        carbs: 87,
-                        protein: 6.5,
-                    },
-                    {
-                        name: 'Donut',
-                        calories: 452,
-                        fat: 25.0,
-                        carbs: 51,
-                        protein: 4.9,
-                    },
-                    {
-                        name: 'KitKat',
-                        calories: 518,
-                        fat: 26.0,
-                        carbs: 65,
-                        protein: 7,
-                    },
-                ]
+                this.cars = this.allCars
             },
 
             editItem (item) {
-                this.editedIndex = this.desserts.indexOf(item)
+                this.editedIndex = this.cars.indexOf(item)
                 this.editedItem = Object.assign({}, item)
                 this.dialog = true
             },
 
             deleteItem (item) {
-                const index = this.desserts.indexOf(item)
-                confirm('Are you sure you want to delete this item?') && this.desserts.splice(index, 1)
+                confirm('Are you sure you want to delete this item?') &&
+                this.deleteCar(item);
             },
 
             close () {
                 this.dialog = false
                 setTimeout(() => {
-                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.editedItem = Object.assign({}, this.defaultItem);
                     this.editedIndex = -1
                 }, 300)
             },
 
             save () {
                 if (this.editedIndex > -1) {
-                    Object.assign(this.desserts[this.editedIndex], this.editedItem)
+                    //Editing an existing car
+                    console.log("editing soon!",this.editedIndex, this.editedItem);
+                    const infos = [this.editedIndex, this.editedItem];
+                    this.editCar(infos);
+                    // Object.assign(this.cars[this.editedIndex], this.editedItem);
                 } else {
-                    this.desserts.push(this.editedItem)
+                    // Adding new car
+                    this.editedItem.No = this.cars.length + 1;
+                    this.addCar(this.editedItem);
                 }
                 this.close()
             },

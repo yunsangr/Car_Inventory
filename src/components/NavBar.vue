@@ -1,7 +1,11 @@
 <template>
     <nav>
-        <v-toolbar flat app dark>
-            <v-toolbar-title>Car Inventory</v-toolbar-title>
+        <v-app-bar app flat dark>
+            <router-link to='/'>
+                <v-row>
+                    <img class="mr-3" :src="require('../assets/myLogo.png')" height="100"/>
+                </v-row>
+            </router-link>
 
             <v-spacer></v-spacer>
 
@@ -10,7 +14,7 @@
             </v-toolbar-items>
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-        </v-toolbar>
+        </v-app-bar>
         <v-navigation-drawer
                 v-model="drawer"
                 dark
@@ -37,7 +41,11 @@
                         link
                 >
                     <v-list-item-content>
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        <router-link  v-bind:to=item.to>
+                            <v-list-item-title>
+                                {{ item.title }}
+                            </v-list-item-title>
+                        </router-link>
                     </v-list-item-content>
                 </v-list-item>
             </v-list>
@@ -53,12 +61,12 @@
             return{
                 drawer: false,
                 items: [
-                    { title: 'Inventory'},
-                    { title: 'Commission'},
-                    { title: 'Manage Market'},
-                    { title: 'Manage Customer'},
-                    { title: 'Report Setting'},
-                    { title: 'Sign out'},
+                    { title: 'Inventory', to: '/'},
+                    { title: 'Commission', to: '/commission'},
+                    { title: 'Manage Market', to:'/managemarket'},
+                    { title: 'Manage Customer', to:'/managecustomer'},
+                    { title: 'Report Setting', to:'/reportsetting'},
+                    { title: 'Sign out', to:'/singout'},
 
                 ],
             }
@@ -67,5 +75,15 @@
 </script>
 
 <style scoped>
+    a {
+        text-decoration: none;
+    }
+
+    .router-link-exact-active {
+        color: #f4f4f4;
+    }
+    .router-link{
+        color: #9fa44c;
+    }
 
 </style>

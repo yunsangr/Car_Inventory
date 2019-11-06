@@ -1,5 +1,5 @@
 <template>
-    $END$
+    <h1>This is the commission view</h1>
 </template>
 
 <script>
