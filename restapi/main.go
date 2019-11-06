@@ -3,13 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
-
-	"github.com/gorilla/mux"
 )
+
 
 // Car struct (Model)
 type Car struct {
@@ -32,11 +33,7 @@ var cars []Car
 // Get all cars
 func getCars(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
+	log.Println("hehehe", w.Header())
 	_ = json.NewEncoder(w).Encode(cars)
 }
 
@@ -97,13 +94,31 @@ func deleteCar(w http.ResponseWriter, r *http.Request) {
 func homeLink(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "Welcome home!")
 }
+// Handle cors error
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Executing middleware", r.Method)
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+		if r.Method == "OPTIONS" {
+			log.Println("setting Access-Control-Allow-Origin")
+			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+			w.Header().Set("Content-Type", "application/json")
+			return
+		}
+		next.ServeHTTP(w, r)
+		log.Println("Executing middleware again")
+	})
+}
+
 
 // Main function
 func main() {
 	// Init router
 	r := mux.NewRouter()
 	r.HandleFunc("/", homeLink)
-
+	//
 
 	// Hardcoded data - @todo: add database
 	cars = append(cars, Car{
@@ -138,7 +153,6 @@ func main() {
 		Booked:"n",
 		Listed:"y",
 	})
-
 	cars = append(cars, Car{
 		No:"4",
 		VinNumber: "SDFMK4MKVCSAMKKSS",
@@ -151,12 +165,15 @@ func main() {
 		Listed:"n",
 	})
 	// Route handles & endpoints
+
 	r.HandleFunc("/cars", getCars).Methods("GET")
 	r.HandleFunc("/cars/{No}", getCar).Methods("GET")
 	r.HandleFunc("/cars", createCar).Methods("POST")
 	r.HandleFunc("/cars/{No}", updateCar).Methods("PUT")
 	r.HandleFunc("/cars/{No}", deleteCar).Methods("DELETE")
 
+	r.Use(mux.CORSMethodMiddleware(r))
+
 	// Start server
-	log.Fatal(http.ListenAndServe(":8000", r))
+	log.Fatal(http.ListenAndServe(":8000", cors.Default().Handler(r)))
 }
