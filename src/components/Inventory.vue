@@ -48,6 +48,9 @@
                                                 <v-text-field v-model="editedItem.MSRP" label="MSRP:"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.Status" label="Status:"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
                                                 <v-text-field v-model="editedItem.Booked" label="Booked:"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
@@ -185,10 +188,7 @@
             save () {
                 if (this.editedIndex > -1) {
                     //Editing an existing car
-                    console.log("editing soon!",this.editedIndex, this.editedItem);
-                    const infos = [this.editedIndex, this.editedItem];
-                    this.editCar(infos);
-                    // Object.assign(this.cars[this.editedIndex], this.editedItem);
+                    this.editCar(this.editedItem);
                 } else {
                     // Adding new car
                     this.editedItem.No = this.cars.length + 1;

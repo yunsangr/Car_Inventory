@@ -4,13 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/rs/cors"
+	"github.com/lithammer/shortuuid"
 	"log"
-	"math/rand"
 	"net/http"
-	"strconv"
 )
 
+// Get an unique id
+func genShortUUID() string {
+	id := shortuuid.New()
+	return id
+}
 
 // Car struct (Model)
 type Car struct {
@@ -30,10 +33,10 @@ type Car struct {
 // Init cars var as a slice Car struct
 var cars []Car
 
+
 // Get all cars
 func getCars(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	log.Println("hehehe", w.Header())
 	_ = json.NewEncoder(w).Encode(cars)
 }
 
@@ -56,7 +59,7 @@ func createCar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var car Car
 	_ = json.NewDecoder(r.Body).Decode(&car)
-	car.No = strconv.Itoa(rand.Intn(100000000)) // Mock ID - not safe
+	car.No = genShortUUID() // Mock ID - not safe
 	cars = append(cars, car)
 	_ = json.NewEncoder(w).Encode(car)
 }
@@ -66,11 +69,12 @@ func updateCar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for index, item := range cars {
+		log.Println(params["No"], item.No)
 		if item.No == params["No"] {
 			cars = append(cars[:index], cars[index+1:]...)
 			var car Car
-			_ = json.NewDecoder(r.Body).Decode(cars)
-			car.No = params["id"]
+			_ = json.NewDecoder(r.Body).Decode(&car)
+			log.Println(car, car.No)
 			cars = append(cars, car)
 			_ = json.NewEncoder(w).Encode(car)
 			return
@@ -81,6 +85,8 @@ func updateCar(w http.ResponseWriter, r *http.Request) {
 // Delete car
 func deleteCar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin","*")
+
 	params := mux.Vars(r)
 	for index, item := range cars {
 		if item.No == params["No"] {
@@ -118,7 +124,6 @@ func main() {
 	// Init router
 	r := mux.NewRouter()
 	r.HandleFunc("/", homeLink)
-	//
 
 	// Hardcoded data - @todo: add database
 	cars = append(cars, Car{
@@ -173,7 +178,6 @@ func main() {
 	r.HandleFunc("/cars/{No}", deleteCar).Methods("DELETE")
 
 	r.Use(mux.CORSMethodMiddleware(r))
-
 	// Start server
-	log.Fatal(http.ListenAndServe(":8000", cors.Default().Handler(r)))
+	log.Fatal(http.ListenAndServe(":8000", corsMiddleware(r)))
 }

@@ -16,14 +16,31 @@ const actions ={
                     commit('setCars', res.data);
                 })
     },
-    addCar : ({commit}, newCar) =>{
-        commit('newCar', newCar);
-    },
-    editCar : ({commit}, infos) => {
-        commit('editedCar',infos);
-    },
-    deleteCar : ({commit}, car) => {
-        commit('deletedCar', car);
+    async addCar({commit}, newCar) {
+        await axios.post("http://localhost:8000/cars", newCar)
+            .then(res => {
+                console.log(res.data);
+                commit('newCar', res.data);
+
+            })
+    }
+    ,
+    async editCar({commit}, editedItem) {
+        await axios.put("http://localhost:8000/cars/" + editedItem.No ,
+            editedItem)
+            .then(res => {
+                commit('editedCar', res.data);
+            })
+            .catch(error => console.log('error!',error));
+    }
+    ,
+    async deleteCar({commit}, car){
+        await axios.delete("http://localhost:8000/cars/" + car.No ,
+            car)
+            .then(res => {
+                commit('deletedCar', res.data);
+            })
+            .catch(error => console.log('error!',error));
     }
 };
 
@@ -34,10 +51,11 @@ const mutations = {
     newCar : (state, newCar) => {
         state.cars.unshift(newCar);
     },
-    editedCar : (state, infos) => {
-        const editedCar = infos[1];
-        const index = infos[0];
-        Object.assign(state.cars[index], editedCar);
+    editedCar : (state, editedCar) => {
+        const index = state.cars.findIndex(todo => todo.No === editedCar.No);
+        if (index !== -1) {
+            state.cars.splice(index, 1, editedCar);
+        }
     },
     deletedCar : (state, deletedCar) => {
         const index = state.cars.indexOf(deletedCar);
